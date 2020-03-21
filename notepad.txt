@@ -1,0 +1,163 @@
+bool layNewPuzzle2(Layout & layout, PuzzleList & puzzles, MainWindow * w) {
+    PuzzleOnBoard  * puzzleOnBoard;
+    Puzzle puzzle("");
+    std::string line;
+    Layout layoutTmp = layout;
+    PuzzleList puzzleListTmp = puzzles;
+    int combinations = 0;
+
+    int refused = 0;
+    puzzles.sort();
+    //for (int k=puzzles.size()-1; k >= 0; k--) {
+    for (int k=0; k < puzzles.size(); k++) {
+
+    //for (int k : randomVect(puzzles.size())) {
+    //for (int k=0; k < 1; k++){
+    //for (int k=puzzles.size()-1; k<puzzles.size(); k++){
+        puzzle = puzzles.get(k);
+        puzzleOnBoard = new PuzzleOnBoard(puzzle,
+                                          Point(0, 0),
+                                          0, true, 0);
+        puzzleOnBoard->setColor(Qt::black);
+        Fit fitResult;
+        for (int i : randomVect(layout.pointsCount())) {
+            if (layout.isAdjacentToPuzzle(i) ){
+                for (int j : randomVect(puzzle.getSidesIterable())) {
+                    if (puzzle.isTwoSided()) {
+                        puzzleOnBoard->reset();
+                        float envelopeAngleToSegment0 = layout.getAngleToSegment(i, CIR(i + 1, layout.pointsCount()),
+                                                                                  SEGMENT0);
+
+                        float sideAngleToSegment0 = 0;
+                        if(j != 0) {
+                            sideAngleToSegment0 = puzzleOnBoard->getAngleToSegment(j,
+                                                                                   CIR(j - 1,puzzle.pointsCount()),
+                                                                                   SEGMENT0);
+                        }else{
+                            sideAngleToSegment0 = puzzleOnBoard->getAngleToSegment(CIR(j - 1,puzzle.pointsCount()),
+                                                                                   j,
+                                                                                   SEGMENT0);
+                        }
+                        puzzleOnBoard->flip().rotate(sideAngleToSegment0 + envelopeAngleToSegment0, j)
+                                             .translate(layout.get(i));
+                        if((puzzle.getAngle(j) > layout.getAngle(i)) && ((puzzle.getAngle(j) - layout.getAngle(i)) < ANG_DELTA)
+                           && (puzzle.getAngle(j) < DEG180)){
+                            float x=(puzzle.getAngle(j)-layout.getAngle(i))/ANG_DELTA*10;
+                            puzzleOnBoard->translate(Segment(layout.get(i).getX(),
+                                                                layout.get(i).getY(),
+                                                                layout.get(CIR(i + 1, layout.pointsCount())).getX(),
+                                                                layout.get(CIR(i + 1, layout.pointsCount())).getY())
+                                                                .pointOnSegmentDistanceToA(x));
+                            if(DEBUG) COUT("^^^^^^^^^^^^^^^^^^^^ corrected res "  << x << " " << puzzle.getId());
+
+                        }
+
+                        if (layout.canFitPuzzle(*puzzleOnBoard,
+                                                 i, Puzzle::getCircularSideId(i + 1, layout.pointsCount()),
+                                                 j, CIR(j - 1, puzzleOnBoard->pointsCount()), true)) {
+
+
+//                            //std::cout << "modify flipped" << puzzle.getId() <<  " " << i << " " << CIR(i + 1, layout.pointsCount()) <<
+//                            //" " << j  << " " << puzzle.getCircularSideId(j - 1) << std::endl;
+                            if(DEBUG) COUT("    fgIterations r " << ++fgIterations);
+                            if(fgIterations > FGITERATIONSSTART && DEBUG) {
+
+                            COUT("    puzzle id " << puzzle.getId());
+                            COUT("    i " << i << " j " << j);
+
+                            COUT("    envelopeAngleToSegment0 " << envelopeAngleToSegment0);
+                            COUT("    sideAngleToSegment0 " << sideAngleToSegment0);
+                            w->setLayout(&layout);
+                            w->pPaintPuzzle();
+                            std::getline(std::cin, line);
+                            }
+
+                            layout.modifyEnvelope(*puzzleOnBoard,
+                                                  i, CIR(i + 1, layout.pointsCount()),
+                                                  j, puzzle.getCircularSideId(j - 1));
+
+                            if(fgIterations > FGITERATIONSSTART && DEBUG ) {
+                                w->setLayout(&layout);
+                                w->pPaintPuzzle();
+                                std::getline(std::cin, line);
+                            }
+
+
+                            puzzles.erase(k);
+
+
+                            //layoutStack.push_back(std::make_pair(layout, puzzles));
+                            push_back_to_stack(std::make_pair(layout, puzzles));
+                            if(puzzles.size() == 0)
+                                return true;
+                            layout = layoutTmp;
+                            puzzles = puzzleListTmp;
+
+
+                        } else {
+                            refused++;
+                        }
+
+                    }
+                    puzzleOnBoard->reset();
+
+                    puzzleOnBoard->rotate(layout.getAngleToSegment(i, CIR(i + 1, layout.pointsCount()),
+                                                                   SEGMENT0)
+                                          - puzzleOnBoard->getAngleToSegment(j, CIR(j + 1, puzzle.pointsCount()),
+                                                                             SEGMENT0), j)
+                            .translate(layout.get(i));
+                    if((puzzle.getAngle(j) > layout.getAngle(i)) && ((puzzle.getAngle(j) - layout.getAngle(i)) < ANG_DELTA)
+                        && (puzzle.getAngle(j) < DEG180)){
+                        float x=(puzzle.getAngle(j)-layout.getAngle(i))/ANG_DELTA*10;
+                        puzzleOnBoard->translate(Segment(layout.get(i).getX(),
+                                                         layout.get(i).getY(),
+                                                         layout.get(CIR(i + 1, layout.pointsCount())).getX(),
+                                                         layout.get(CIR(i + 1, layout.pointsCount())).getY())
+                                                         .pointOnSegmentDistanceToA(x));
+                        if(DEBUG)  COUT("^^^^^^^^^^^^^^^^^^^^ corrected " << x << " " << puzzle.getId());
+
+                    }
+                    if (layout.doesPuzzleFit(*puzzleOnBoard,
+                                             i, Puzzle::getCircularSideId(i + 1, layout.pointsCount()),
+                                             j, CIR(j + 1, puzzleOnBoard->pointsCount()),
+                                             false)) {
+                        if (DEBUG) COUT("    fgIterations " << ++fgIterations);
+                        if(fgIterations > FGITERATIONSSTART && DEBUG ) {
+                            w->setLayout(&layout);
+                            w->pPaintPuzzle();
+                            std::getline(std::cin, line);
+                        }
+                        layout.modifyEnvelope(*puzzleOnBoard,
+                                              i, CIR(i + 1, layout.pointsCount()),
+                                              j,puzzle.getCircularSideId(j + 1));
+
+                        if(fgIterations > FGITERATIONSSTART && DEBUG) {
+                            w->setLayout(&layout);
+                            w->pPaintPuzzle();
+                            std::getline(std::cin, line);
+                        }
+
+                        puzzles.erase(k);
+
+                        push_back_to_stack(std::make_pair(layout, puzzles));
+                        if(puzzles.size() == 0)
+                            return true;
+                        layout = layoutTmp;
+                        puzzles = puzzleListTmp;
+
+
+                    } else {
+                        refused++;
+                    }
+
+                }
+            }
+        }
+        //std::cout << "refused " << refused << std::endl;
+        delete puzzleOnBoard;
+    }
+
+
+
+    return false;
+}
