@@ -7,6 +7,7 @@
 #include <boost/serialization/priority_queue.hpp>
 
 
+
 bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
     PuzzleOnBoard  * puzzleOnBoard;
     const Puzzle * puzzle;

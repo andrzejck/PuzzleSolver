@@ -12,6 +12,8 @@ float Math::ApproxAtan(float z)
     return (n1 + n2 * z * z) * z;
 }
 
+
+
 float Math::ApproxAtan2(float y, float x){
     if (x != 0.0f)
     {
@@ -53,11 +55,11 @@ float Math::ApproxAtan2(float y, float x){
     {
         if (y > 0.0f) // x = 0, y > 0
         {
-            return PI_2;
+            return M_PI_2;
         }
         else if (y < 0.0f) // x = 0, y < 0
         {
-            return -PI_2;
+            return -M_PI_2;
         }
     }
     return 0.0f; // x,y = 0. Could return NaN instead.

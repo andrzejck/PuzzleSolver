@@ -17,6 +17,7 @@
 #include <random>
 #include <thread>
 
+
 #define COUT(x) std::cout << x << std::endl;
 
 #define DEBUG_FIT (fgIterations < 0)

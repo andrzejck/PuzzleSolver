@@ -6,12 +6,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <iostream>
-#include "point.h"
-#include "Segment.h"
-#include "puzzle.h"
+
 #include "PuzzleList.h"
-#include "PuzzleOnBoard.h"
-#include "Layout.h"
+
 #include "CIniFile.h"
 #include <thread>
 
@@ -20,12 +17,6 @@
 #include "Solver.h"
 
 
-#include <boost/test/unit_test.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/file.hpp>
 
 
 

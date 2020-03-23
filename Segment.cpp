@@ -4,7 +4,10 @@
 
 #include "Segment.h"
 #include <math.h>
+#include <Math.h>
 #include "puzzle.h"
+
+
 
 Segment SEGMENT0 = Segment(0.0, 0.0, 1000, 0);
 
@@ -47,7 +50,7 @@ float Segment::angleBetween(const Segment &other) const {
 
     int dot = x1*x2 + y1*y2;//      # dot product between [x1, y1] and [x2, y2]
     int det = x1*y2 - y1*x2;//      # determinant
-    float alfa = atan2(det, dot);
+    float alfa = Math::ApproxAtan2(det, dot);
     return alfa;
 
 }
