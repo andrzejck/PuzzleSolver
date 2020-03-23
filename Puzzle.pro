@@ -12,16 +12,44 @@ TARGET = Puzzle
 TEMPLATE = app
 #CONFIG += c++1z
 QMAKE_CXXFLAGS += -std=c++1z
+LIBS +=  -lboost_serialization\
+        -lboost_unit_test_framework\
+        -lboost_system \
+        -lboost_iostreams \
+        -lboost_thread \
+        -lboost_log
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
+
+
+SOURCES +=  point.cpp \
+    PuzzleOnBoard.cpp \
+    LayoutCacheImage.cpp \
+    PointOfEnvelope.cpp  \
+    Segment.cpp \
+    Layout.cpp   \
+    Polygon.cpp   \
+    SegmentOfEnvelope.cpp  \
+    main.cpp  \
     puzzle.cpp \
-    point.cpp \
-    Segment.cpp
+    test.cpp  \
+    mainwindow.cpp  \
+    PuzzleList.cpp  \
+    Vector.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  +=  point.h \
+    PuzzleList.h \
+    ui_mainwindow.h \
+    LayoutCacheImage.h \
+    PointOfEnvelope.h \
+    PuzzleOnBoard.h  \
+    Vector.h \
+    Layout.h \
+    Polygon.h \
+    Segment.h \
+    mainwindow.h \
     puzzle.h \
-    point.h \
-    Segment.h
+    SegmentOfEnvelope.h \
+    CIniFile.h
+
 
 FORMS    += mainwindow.ui

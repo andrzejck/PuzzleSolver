@@ -16,7 +16,9 @@
 #include <boost/serialization/unordered_map.hpp>
 
 
-bool comparePuzzle(const Puzzle &l1, const Puzzle &l2);
+bool comparePuzzle(Puzzle * l1, const Puzzle * l2);
+
+
 
 static std::string IDS[] =  {"0|1", "2|3", "4", "5", "6|7",
                              "9", "10", "12", "13+11", "14+8",
@@ -25,7 +27,7 @@ static std::string IDS[] =  {"0|1", "2|3", "4", "5", "6|7",
 
 class PuzzleList {
 private:
-    std::vector<Puzzle> puzzleList;
+    std::vector<Puzzle*> puzzleList;
     std::unordered_map<std::string, int> puzzleIds;
     float minAngle;
 public:
@@ -48,25 +50,25 @@ private:
         minAngle=2*M_PI;
         minSpan=100000;
         for(auto p: puzzleList){
-            if(minAngle > p.getMinAngle())
-                minAngle = p.getMinAngle();
-            if(minSpan > p.getMinSpan())
-                minSpan = p.getMinSpan();
+            if(minAngle > p->getMinAngle())
+                minAngle = p->getMinAngle();
+            if(minSpan > p->getMinSpan())
+                minSpan = p->getMinSpan();
         }
     }
 
 public:
     //PuzzleList();
     void generateSimplified();
-    void generateSimplified1();
-    void generateSimplified2();
-    void generate();
+//    void generateSimplified1();
+//    void generateSimplified2();
+//    void generate();
 
-    std::vector<Puzzle>::const_iterator cbegin(){
+    std::vector<Puzzle*>::const_iterator cbegin(){
         return puzzleList.cbegin();
     }
 
-    std::vector<Puzzle>::const_iterator cend(){
+    std::vector<Puzzle*>::const_iterator cend(){
         return puzzleList.cend();
     }
 
@@ -74,17 +76,17 @@ public:
         return puzzleList.size();
     }
 
-    const Puzzle get(int pos) const{
+    Puzzle * get(int pos) const{
         return puzzleList[pos];
     }
 
     void erase(int pos){
-        puzzleIds[puzzleList[pos].getId()]--;
-        if (puzzleIds[puzzleList[pos].getId()] == 0){
-            puzzleIds.erase(puzzleList[pos].getId());
+        puzzleIds[puzzleList[pos]->getId()]--;
+        if (puzzleIds[puzzleList[pos]->getId()] == 0){
+            puzzleIds.erase(puzzleList[pos]->getId());
 
         }
-        if(puzzleList[pos].getMinAngle() != minAngle)
+        if(puzzleList[pos]->getMinAngle() != minAngle)
         {
             puzzleList.erase(puzzleList.begin() + pos);
         }else{
@@ -105,7 +107,7 @@ public:
 
     void print(){
         for(auto p: puzzleList){
-            std::cout<<p.getId() << " ";
+            std::cout<<p->getId() << " ";
         }
         std::cout << std::endl;
     }

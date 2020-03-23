@@ -68,6 +68,7 @@ void Layout::calculateAngles() {
     prev(p).calcAngle(prev(p-1), get(p));
     next(p).calcAngle(get(p), next(p+1));*/
     sumEnvelope=0;
+    angleSumm = 0;
     std::vector<int> toRemove;
     minSide = 1000000000000;
     qualityFactor = 0;
@@ -78,6 +79,7 @@ void Layout::calculateAngles() {
             if (envelopeSides[i] < minSide)
                 minSide = envelopeSides[i];
             sumEnvelope += envelopeSides[i];
+            angleSumm += envelope[i].getAngle();
             if(envelope[i].getAngle() < 0){
                 // !!! i dont like it
                 envelope[i].setAngle(2*M_PI+envelope[i].getAngle());

@@ -5,13 +5,13 @@
 #include "PuzzleOnBoard.h"
 #include <cmath>
 
-PuzzleOnBoard::PuzzleOnBoard(const Puzzle &_puzzle,
+PuzzleOnBoard::PuzzleOnBoard(const Puzzle  * _puzzle,
                              const Point & _centerPoint ,
                              float _rotateAngle ,
                              bool _isFlipped ,
                              int _pivotPointId) : puzzle(_puzzle) {
     puzzle = _puzzle;
-
+    puzzleId.assign(puzzle->getId());
     reset();
     rotateAngle = _rotateAngle;
     centerPoint =  Point(_centerPoint);
@@ -63,7 +63,7 @@ PuzzleOnBoard & PuzzleOnBoard::flip(){
     points.clear();
     segments.clear();
     float maxX=0;
-    for(auto p = puzzle.begin(); p!=puzzle.end(); p++){
+    for(auto p = puzzle->begin(); p!=puzzle->end(); p++){
 
         if  ( p->getX() > maxX) {
             maxX = p->getX();
@@ -108,11 +108,13 @@ PuzzleOnBoard &PuzzleOnBoard::rotate(float angle, int pointId) {
 }
 
 PuzzleOnBoard &PuzzleOnBoard::reset() {
+    if(puzzle == nullptr)
+        throw std::logic_error("reset when puzzle is null");
     points.clear();
     isFlipped=false;
     centerPoint=Point(0,0);
     rotateAngle=0;
-    for(auto it = puzzle.begin(); it != puzzle.end(); it++){
+    for(auto it = puzzle->begin(); it != puzzle->end(); it++){
         points.push_back(*it);
     }
 
@@ -143,9 +145,9 @@ bool PuzzleOnBoard::isIsFlipped() const {
     return isFlipped;
 }
 
-PuzzleOnBoard::PuzzleOnBoard(const PuzzleOnBoard &p) : puzzle(p.puzzle) {
-
-
+PuzzleOnBoard::PuzzleOnBoard(const PuzzleOnBoard &p){
+    puzzle=p.puzzle;
+    puzzleId.assign(puzzle->getId());
     centerPoint = p.centerPoint;
 
     pivotPointId = p.pivotPointId;
@@ -164,7 +166,7 @@ PuzzleOnBoard &PuzzleOnBoard::scale(float scale){
         points[i].setX(points[i].getX()*scale);
         points[i].setY(points[i].getY()*scale);
         //puzzle.scaleAngle(i,scale);
-        puzzle.scaleSide(i,scale);
+        //puzzle->scaleSide(i,scale);
 
     }
     return *this;

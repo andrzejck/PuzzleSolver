@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.5.1, 2020-01-11T10:15:36. -->
+<!-- Written by QtCreator 3.5.1, 2020-03-22T14:26:51. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -208,8 +208,8 @@
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableBranchSim">false</value>
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableCacheSim">false</value>
     <value type="bool" key="Analyzer.Valgrind.Callgrind.EnableEventToolTips">true</value>
-    <value type="float" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0.01</value>
-    <value type="float" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">10</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.MinimumCostRatio">0.0099999997764825821</value>
+    <value type="double" key="Analyzer.Valgrind.Callgrind.VisualisationMinimumCostRatio">10</value>
     <value type="bool" key="Analyzer.Valgrind.FilterExternalIssues">true</value>
     <value type="int" key="Analyzer.Valgrind.LeakCheckOnFinish">1</value>
     <value type="int" key="Analyzer.Valgrind.NumCallers">25</value>

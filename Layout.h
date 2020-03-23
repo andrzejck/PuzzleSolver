@@ -39,9 +39,11 @@ private:
    std::stack<int> puzzlePointsToVisit;
    float sumArea=0;
    float sumEnvelope=0;
+   float angleSumm = 0;
    int fgOrigin = 0;
    float minSide = 0;
    float qualityFactor = 0;
+   int puzzlesCountTrace=-1;
 public:
     float getQualityFactor() const;
 
@@ -120,18 +122,6 @@ public:
     bool hasLoop();
 
 
-
-    bool doesPuzzleFit2(const PuzzleOnBoard &puzzle, int layoutPointId, int layoutNextPointId, int puzzlePointId,
-                        int puzzleNextPointId, bool flipped, const PuzzleList &puzzleList) const;
-
-    Fit canFitPuzzle3(const PuzzleOnBoard & puzzle,
-                      int layoutPointId,
-                      int layoutNextPointId,
-                      int puzzlePointId,
-                      int puzzleNextPointId,
-                      bool flipped) const;
-
-
     friend std::ostream &operator<<(std::ostream &os, const Layout &layout);
 
     QPointF * asQPointF(float scale, float ox, float oy){
@@ -159,7 +149,16 @@ public:
     }
 
     unsigned long puzzleCount() const{
-        return puzzlesOnBoard.size();
+        if(puzzlesCountTrace == -1)
+            return puzzlesOnBoard.size();
+        else
+            return puzzlesCountTrace;
+    }
+
+    void clearPuzzleList(){
+        puzzlesCountTrace=puzzlesOnBoard.size();
+        puzzlesOnBoard.clear();
+        puzzlesOnBoard.shrink_to_fit();
     }
 
     static int compareAng(float a, float b){
@@ -211,10 +210,11 @@ public:
     const int inside(const Point &p) const;
 
     const float anglesSum() const{
-        float sum=0;
+        return angleSumm;
+/*        float sum=0;
         for (auto e: envelope){
             sum = (int)(((e.getAngle()*360)/2*M_PI)/5)*5;
-        }
+        }*/
     }
     void generateEnlarged(float offset);
 };

@@ -11,8 +11,8 @@
 class Point
 {
 private:
-    float x;
-    float y;
+    short x;
+    short y;
 
     friend class boost::serialization::access;
     template<class Archive>
@@ -22,17 +22,18 @@ private:
         ar & y;
     }
 public:
-    Point() { x=0.0; y=0.0;};
-    explicit Point(float _x, float _y);
+    Point() { x=0; y=0;};
+    Point(float _x, float _y) {x=_x; y=_y;}
     Point(const Point &p2) {x = p2.x; y = p2.y; }
-    float getX() const;
-    void setX(float value);
-    float getY() const;
+    short getX() const;
+
+    short getY() const;
 
     bool operator==(const Point &rhs) const;
 
     bool operator!=(const Point &rhs) const;
 
+    void setX(float value);
     void setY(float value);
     float distance(const Point& o) const;
     Point & operator + (const Point& o);

@@ -1,7 +1,7 @@
 #include "point.h"
 #include <math.h>
 
-float Point::getX() const
+short Point::getX() const
 {
     return x;
 }
@@ -11,7 +11,7 @@ void Point::setX(float value)
     x = value;
 }
 
-float Point::getY() const
+short Point::getY() const
 {
     return y;
 }
@@ -21,11 +21,7 @@ void Point::setY(float value)
     y = value;
 }
 
-Point::Point(float _x, float _y)
-{
-    x=_x;
-    y=_y;
-}
+
 
 float Point::distance(const Point& o) const{
     return sqrt((o.x-x)*(o.x-x)+(o.y-y)*(o.y-y));

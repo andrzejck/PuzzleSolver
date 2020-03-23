@@ -36,7 +36,13 @@ add_executable(Puzzle
         Polygon.cpp
         Polygon.h
         SegmentOfEnvelope.cpp
-        SegmentOfEnvelope.h LayoutCacheImage.cpp LayoutCacheImage.h Vector.cpp Vector.h)
+        SegmentOfEnvelope.h
+        LayoutCacheImage.cpp
+        LayoutCacheImage.h
+        Vector.cpp
+        Vector.h
+        CIniFile.h
+        CIniFile.cpp Solver.cpp Solver.h Math.cpp Math.h)
 
 #qt5_generate_moc(main.cpp main.moc)
 #qt5_generate_moc(mainwindow.cpp mainwindow.moc)
