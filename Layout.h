@@ -16,6 +16,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
 
 
@@ -30,13 +31,12 @@ class Layout : public Polygon {
 public:
 
 private:
-   std::vector<PuzzleOnBoard> puzzlesOnBoard;
+   std::vector<PuzzleOnBoard*> puzzlesOnBoard;
    std::vector<PointOfEnvelope> envelope;
    std::vector<PointOfEnvelope> envelopeEnlarged;
-   std::vector<float> envelopeSides;
+   //std::vector<float> envelopeSides;
    void calculateAngles();
-   std::stack<int> envelopePointsToVisit;
-   std::stack<int> puzzlePointsToVisit;
+
    float sumArea=0;
    float sumEnvelope=0;
    float angleSumm = 0;
@@ -63,7 +63,7 @@ private:
         ar & boost::serialization::base_object<Polygon>(*this);
         ar & puzzlesOnBoard;
         ar & envelope;
-        ar & envelopeSides;
+        //ar & envelopeSides;
         ar & sumArea;
         ar & sumEnvelope;
         ar & fgOrigin;
@@ -94,11 +94,11 @@ public:
     const PointOfEnvelope & prev(int p) const;
     const PointOfEnvelope & get(int i) const;
     const PointOfEnvelope & getE(int i) const;
-    const std::vector<PuzzleOnBoard>& getPuzzles() const {
+    const std::vector<PuzzleOnBoard*>& getPuzzles() const {
         return puzzlesOnBoard;
     }
 
-    void insertPuzzleOnBoard(const PuzzleOnBoard p){
+    void insertPuzzleOnBoard(PuzzleOnBoard * p){
         puzzlesOnBoard.push_back(p);
     }
 
@@ -112,7 +112,7 @@ public:
         return envelope.cend();
     }
 
-    bool doesPuzzleFit(const PuzzleOnBoard &puzzle,
+    bool doesPuzzleFit(PuzzleOnBoard * puzzle,
                        int layoutPointId,
                        int layoutNextPointId,
                        int puzzlePointId,
@@ -147,7 +147,9 @@ public:
     unsigned long pointsCount() const{
         return envelope.size();
     }
-
+    int getBucket(){
+        return pointsCount();
+    }
     unsigned long puzzleCount() const{
         if(puzzlesCountTrace == -1)
             return puzzlesOnBoard.size();
@@ -189,7 +191,7 @@ public:
                             int puzzlePointId,
                             int puzzleNextPointId) const;
 
-    void modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
+    void modifyEnvelope(PuzzleOnBoard * puzzleOnBoard,
                           int layoutPointId,
                           int layoutNextPointId,
                           int puzzlePointId,
@@ -226,7 +228,13 @@ public:
     // as hash function.
     size_t operator()(const Layout& l) const
     {
-        return l.getSumArea()+l.getSumEnvelope()+l.pointsCount()+l.puzzleCount();
+        size_t seed;
+        
+        boost::hash_combine(seed, l.getSumArea()/10);
+        boost::hash_combine(seed, l.getSumEnvelope()/10);
+        boost::hash_combine(seed, l.pointsCount());
+        boost::hash_combine(seed, l.puzzleCount());
+        return seed;
     }
 };
 

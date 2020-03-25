@@ -1,20 +1,12 @@
 #include "point.h"
 #include <math.h>
 
-short Point::getX() const
-{
-    return x;
-}
 
 void Point::setX(float value)
 {
     x = value;
 }
 
-short Point::getY() const
-{
-    return y;
-}
 
 void Point::setY(float value)
 {

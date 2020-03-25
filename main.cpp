@@ -15,6 +15,12 @@
 #include <algorithm>
 
 #include "Solver.h"
+#include <boost/log/trivial.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/file.hpp>
+
 
 
 
@@ -34,15 +40,15 @@ PuzzleList pl;
 
 //#define SAVE_AFTER_LIMIT false
 #define COUT(x) std::cout << x << std::endl;
-#define DEBUG_FIT (fgIterations < 0)
-#define DEBUG (fgIterations < 0)
-#define DEBUG_PROMISSING (fgIterations <= 0)
-#define DEBUG_INTERLACE (fgIterations <=  0)
-#define SAVE_PRE false
-//#define FGITERATIONSSTART 2433636
+//#define DEBUG_FIT (fgIterations < 0)
+//#define DEBUG (fgIterations > 1288261)
+//#define DEBUG_PROMISSING (fgIterations <= 0)
+//#define DEBUG_INTERLACE (fgIterations <=  0)
+//#define SAVE_PRE false
+////#define FGITERATIONSSTART 2433636
 //#define READ_FROM_FILE "700000savelog_layout"
 #define SAVELOG 20000000
-
+#define MAINWINDOW
 
 
 
@@ -105,7 +111,7 @@ long iterations=0;
 
 
 
-//namespace logging = boost::log;
+namespace logging = boost::log;
 void solvePuzzles( MainWindow * w, QString layoutFilename, int iStart=-1, int iSize = -1 ){
     CIniFile * cIniFile = cIniFile->getInstance();
     Solver solver;
@@ -120,7 +126,9 @@ void solvePuzzles( MainWindow * w, QString layoutFilename, int iStart=-1, int iS
 #ifdef MAIN
 int main(int argc, char *argv[])
 {
-    //logging::add_file_log("layout.log");
+
+    logging::add_file_log("layout.log");
+    CIniFile * cIniFile = cIniFile->getInstance();
     QString layoutFilename;
     int iStart=-1;
     int iSize=-1;
@@ -134,22 +142,27 @@ int main(int argc, char *argv[])
 
 
     std::srand(unsigned(time(0)));
-#ifdef SHOW_WINDOW
+#ifdef MAINWINDOW
     QApplication a(argc, argv);
     MainWindow w;
-#endif
-
-#ifdef SHOW_WINDOW
-    std::thread th1(solvePuzzles,  &w, layoutFilename, iStart, iSize);
+        std::thread th1(solvePuzzles,  &w, layoutFilename, iStart, iSize);
     th1.detach();
     //w.setFixedWidth(1000);
-    w.setFixedSize(1000,1000);
-    w.show();
-    w.pPaintPuzzle();
+    w.setFixedSize(1000, 1000);
+    if(! cIniFile->get<int>(std::string("HEADLESS"))) {
+
+        w.show();
+        w.pPaintPuzzle();
+    }
+
     //th1.join();
     return a.exec();
+#else
+    std::thread th1(solvePuzzles,  nullptr, layoutFilename, iStart, iSize);
+    th1.join();
+
 #endif
-    //delete layout;
+
 
 }
 

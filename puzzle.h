@@ -136,6 +136,14 @@ public:
    //{
    //     points.push_back(std::make_unique<Point>(point));
    // }
+   float getAngleToSegment(int pointId, int nextPointId, const Segment & s, bool isFlipped) const {
+
+       if( isFlipped)
+           return getAngleToSegment(pointId, nextPointId, s)  - M_PI;
+       else
+           return getAngleToSegment(pointId, nextPointId, s);
+   }
+
 };
 
 class PuzzleHashFunction {

@@ -29,6 +29,7 @@ class PuzzleList {
 private:
     std::vector<Puzzle*> puzzleList;
     std::unordered_map<std::string, int> puzzleIds;
+    std::unordered_map<std::string, Puzzle*> puzzleIdsMap;
     float minAngle;
 public:
     float getMinAngle() const;
@@ -84,6 +85,7 @@ public:
         puzzleIds[puzzleList[pos]->getId()]--;
         if (puzzleIds[puzzleList[pos]->getId()] == 0){
             puzzleIds.erase(puzzleList[pos]->getId());
+            puzzleIdsMap.erase(puzzleList[pos]->getId());
 
         }
         if(puzzleList[pos]->getMinAngle() != minAngle)
@@ -128,6 +130,13 @@ public:
         return res;
     }
 
+    Puzzle * getById(std::string id){
+        if(puzzleIdsMap.count(id) >= 0){
+            return puzzleIdsMap[id];
+        }else
+            return nullptr;
+
+    }
 
 };
 

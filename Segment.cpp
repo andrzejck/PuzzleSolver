@@ -68,9 +68,9 @@ float Segment::vectorProduct(Point x, Point y, Point z) {
 bool Segment::inters(const Segment &other) {
 
 
-    float ang=angleBetween(other);
+    /*float ang=angleBetween(other);
     if ((abs(ang) < ANG_DELTA/4) || (abs(abs(ang)-DEG180) < ANG_DELTA/4))
-        return false;
+        return false;*/
 
     float v1=vectorProduct(other.A,other.B,A);
     float v2=vectorProduct(other.A,other.B,B);

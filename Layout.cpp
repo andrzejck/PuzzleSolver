@@ -26,7 +26,7 @@ bool Layout::insert(int pos, const PointOfEnvelope &p) {
 
     envelope.insert(envelope.begin()+pos, p);
     //envelopeSides.insert(envelopeSides.begin()+pos, 0);
-    envelopeSides.push_back(0);
+    //envelopeSides.push_back(0);
     //calculateAngles();
     //envelopePointsFromPuzzle.insert(std::make_pair<int,int>(pos, i));
     return true;
@@ -35,7 +35,7 @@ bool Layout::insert(int pos, const PointOfEnvelope &p) {
 
 void Layout::push_back(const PointOfEnvelope &p) {
     envelope.push_back(p);
-    envelopeSides.push_back(0);
+//    envelopeSides.push_back(0);
     calculateAngles();
 }
 
@@ -49,7 +49,7 @@ const PointOfEnvelope &Layout::prev(int p) const{
 
 void Layout::erase(int p) {
     envelope.erase(envelope.begin()+Puzzle::getCircularSideId(p, envelope.size()));
-    envelopeSides.erase(envelopeSides.begin()+Puzzle::getCircularSideId(p, envelopeSides.size()));
+    //envelopeSides.erase(envelopeSides.begin()+Puzzle::getCircularSideId(p, envelopeSides.size()));
     //calculateAngles();
     //if
 }
@@ -72,13 +72,14 @@ void Layout::calculateAngles() {
     std::vector<int> toRemove;
     minSide = 1000000000000;
     qualityFactor = 0;
+    float envelopeSides_i=0;
     if(envelope.size() > 2){
         for(int i= 0; i<envelope.size(); i++){
             envelope[i].calcAngle(prev(i), next(i));
-            envelopeSides[i]=envelope[i].distance(next(i));
-            if (envelopeSides[i] < minSide)
-                minSide = envelopeSides[i];
-            sumEnvelope += envelopeSides[i];
+            envelopeSides_i=envelope[i].distance(next(i));
+            if (envelopeSides_i < minSide)
+                minSide = envelopeSides_i;
+            sumEnvelope += envelopeSides_i;
             angleSumm += envelope[i].getAngle();
             if(envelope[i].getAngle() < 0){
                 // !!! i dont like it
@@ -86,10 +87,10 @@ void Layout::calculateAngles() {
             }
             qualityFactor = qualityFactor + 1/ envelope[i].getAngle();
 #ifdef SIMPLIFY
-            if(envelopeSides[i] < DIM_DELTA) {
+            if(envelopeSides_i < DIM_DELTA) {
                 //toRemove.push_back(i);
                 envelope.erase(envelope.begin() + i);
-                envelopeSides.erase(envelopeSides.begin() + i);
+                //envelopeSides.erase(envelopeSides.begin() + i);
                 return;
                 //  toRemove.push_back(CIR(i+1, envelope.size()));
             }
@@ -97,7 +98,7 @@ void Layout::calculateAngles() {
 
                 //toRemove.push_back(i);
                 envelope.erase(envelope.begin() + i);
-                envelopeSides.erase(envelopeSides.begin() + i);
+                //envelopeSides.erase(envelopeSides.begin() + i);
                 return;
              }
 
@@ -105,7 +106,7 @@ void Layout::calculateAngles() {
 
                 //toRemove.push_back(i);
                 envelope.erase(envelope.begin() + i);
-                envelopeSides.erase(envelopeSides.begin() + i);
+                //envelopeSides.erase(envelopeSides.begin() + i);
                 return;
             }
 
@@ -113,7 +114,7 @@ void Layout::calculateAngles() {
 
                 //toRemove.push_back(i);
                 envelope.erase(envelope.begin() + i);
-                envelopeSides.erase(envelopeSides.begin() + i);
+                //envelopeSides.erase(envelopeSides.begin() + i);
                 return;
             }
 #endif //SIMPLIFY
@@ -126,7 +127,7 @@ void Layout::calculateAngles() {
             envelopeSides.erase(envelopeSides.begin() + toRemove[i]);
         }
         for(int i= 0; i<envelope.size(); i++) {
-            envelopeSides[i] = envelope[i].distance(next(i));
+            envelopeSides_i = envelope[i].distance(next(i));
         }
     }*/
 }
@@ -141,38 +142,26 @@ std::ostream &operator<<(std::ostream &os, const Layout &layout) {
 
 
 
- bool Layout::doesPuzzleFit(const PuzzleOnBoard &puzzle,
+ bool Layout::doesPuzzleFit(PuzzleOnBoard * puzzle,
                             int layoutPointId,
                             int layoutNextPointId,
                             int puzzlePointId,
                             int puzzleNextPointId,
                             bool flipped) const{
-    //conditions;
-    // side length <= distance node-neighbour &&
-    // if (node.next == neighbour)
-    //    puzzle.leftAngle <= node.anglex
-    //    puzzle.rightAngle <= neighbour.angle
-    //  && ! intersect with other
-    float puzzleSideLen=puzzle.getSideLengthS(puzzlePointId, puzzleNextPointId);
-    //float layoutSideLen=getSideLengthS(layoutPointId, layoutNextPointId);
-    float puzzleAngle=puzzle.getAngle(puzzlePointId);
+    float puzzleSideLen=puzzle->getSideLengthS(puzzlePointId, puzzleNextPointId);
+
+    float puzzleAngle=puzzle->getAngle(puzzlePointId);
     float layoutAngle=getAngle(layoutPointId);
     float nextLayoutAngle = getAngle(layoutNextPointId);
-    //float nextPuzzleAngle = puzzle.getAngle(puzzleNextPointId);
-    /*if((puzzleSideLen/layoutSideLen > 2) && (compareAng(abs(nextLayoutAngle), DEG180) < 0))
-        return false;*/
-    //if(compareDim(puzzleSideLen,layoutSideLen) >0 )
-    //    return false;
-    /*if(compareAng(puzzleAngle, layoutAngle) > 0)
-        return false;*/
-    for (int j=0; j < puzzle.pointsCount(); j++){
-        float x=puzzle.get(j).getX();
-        float y=puzzle.get(j).getY();
+
+    for (int j=0; j < puzzle->pointsCount(); j++){
+        float x=puzzle->get(j).getX();
+        float y=puzzle->get(j).getY();
         if ((x < (0-DIM_DELTA)) || (x > (BOARDSIZE+DIM_DELTA)) || (y < (0-DIM_DELTA)) || (y > (BOARDSIZE+DIM_DELTA))){
             COUT1("******************* fired F ************************************");
             return false;
         }
-        if ( inside(puzzle.get(j)) == 0){
+        if ( inside(puzzle->get(j)) == 0){
             COUT1("******************* fired E ************************************");
             return false;
         }
@@ -180,7 +169,7 @@ std::ostream &operator<<(std::ostream &os, const Layout &layout) {
     }
 
 //     for (int j=0; j < pointsCount(); j++){
-//         if ( puzzle.inside(get(j)) != 0){
+//         if ( puzzle->inside(get(j)) != 0){
 //             //COUT("******************* fired D ************************************");
 //             return false;
 //         }
@@ -189,10 +178,10 @@ std::ostream &operator<<(std::ostream &os, const Layout &layout) {
 #ifdef CHECKLINESINTERLACE
     for(int i=0; i < envelope.size(); i++){
         Segment envelopeSegment=Segment(getE(i), getE(i+1));
-        for (int j=0; j < puzzle.pointsCount(); j++){
+        for (int j=0; j < puzzle->pointsCount(); j++){
             // don't compare adjacent sides
 
-           Segment puzzleSegment=Segment(puzzle.get(j), puzzle.get(j+1));
+           Segment puzzleSegment=Segment(puzzle->get(j), puzzle->get(j+1));
             if(envelopeSegment.inters(puzzleSegment)
               )
             {
@@ -207,15 +196,15 @@ std::ostream &operator<<(std::ostream &os, const Layout &layout) {
 }
 
 float Layout::getSideLengthS(int pointId, int nextPointId) const {
-    int pointId_=Puzzle::getCircularSideId(pointId, envelope.size());
-    int nextPointId_=Puzzle::getCircularSideId(nextPointId, envelope.size());
-    if ((pointId_ == pointsCount()-1) && (nextPointId_ ==0))
-        return envelopeSides[pointId_];
-
-    if(pointId_ > nextPointId_)
-        return envelopeSides[nextPointId_];
-    else
-        return envelopeSides[pointId_];
+//    int pointId_=Puzzle::getCircularSideId(pointId, envelope.size());
+//    int nextPointId_=Puzzle::getCircularSideId(nextPointId, envelope.size());
+//    if ((pointId_ == pointsCount()-1) && (nextPointId_ ==0))
+//        return envelopeSides[pointId_];
+//
+//    if(pointId_ > nextPointId_)
+//        return envelopeSides[nextPointId_];
+//    else
+//        return envelopeSides[pointId_];
 
 
 }
@@ -241,13 +230,13 @@ float Layout::getAngleToSegment(int pointId, int nextPointId, const Segment &s) 
         return s.angleBetween(Segment(envelope[pointId_], envelope[nextPointId_]));
 }
 
-void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
+void Layout::modifyEnvelope(PuzzleOnBoard * puzzleOnBoard,
                               int layoutPointId,
                               int layoutNextPointId,
                               int puzzlePointId,
                               int puzzleNextPointId) {
     puzzlesOnBoard.push_back(puzzleOnBoard);
-    sumArea += puzzleOnBoard.getArea();
+    sumArea += puzzleOnBoard->getArea();
     std::map<int,int> envelopePointsToRemove;
     std::map<int,int> puzzlePointsToRemove;
     envelopePointsToRemove.clear();
@@ -268,19 +257,19 @@ void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
 
     std::vector<PointOfEnvelope> removedPoints;
 
-    for(int i=0; i < puzzleOnBoard.pointsCount(); i++) {
+    for(int i=0; i < puzzleOnBoard->pointsCount(); i++) {
 
 
-        if ((compareAng(puzzleOnBoard.getAngle(curPointOfPuzzle), getAngle(curPointOfEnvelope)) == 0) &&
-            (puzzleOnBoard.get(curPointOfPuzzle).distance(envelope[curPointOfEnvelope]) < DIM_DELTA)) {
+        if ((compareAng(puzzleOnBoard->getAngle(curPointOfPuzzle), getAngle(curPointOfEnvelope)) == 0) &&
+            (puzzleOnBoard->get(curPointOfPuzzle).distance(envelope[curPointOfEnvelope]) < DIM_DELTA)) {
             envelopePointsToRemove.insert(std::pair<int, int>(curPointOfEnvelope, 1));
             puzzlePointsToRemove.insert(std::pair<int, int>(curPointOfPuzzle, 1));
         }
         curPointOfEnvelope = CIR(curPointOfEnvelope + 1, envelope.size());
-        if (!puzzleOnBoard.isIsFlipped()) {
-            curPointOfPuzzle = CIR(curPointOfPuzzle + 1, puzzleOnBoard.pointsCount());
+        if (!puzzleOnBoard->isIsFlipped()) {
+            curPointOfPuzzle = CIR(curPointOfPuzzle + 1, puzzleOnBoard->pointsCount());
         } else {
-            curPointOfPuzzle = CIR(curPointOfPuzzle - 1, puzzleOnBoard.pointsCount());
+            curPointOfPuzzle = CIR(curPointOfPuzzle - 1, puzzleOnBoard->pointsCount());
         }
     }
 
@@ -342,15 +331,15 @@ void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
             erase(i->first);
         }
 
-        if(! puzzleOnBoard.isIsFlipped()) {
+        if(! puzzleOnBoard->isIsFlipped()) {
             int l=puzzlePointId;
-            for(int k=0; k< puzzleOnBoard.pointsCount(); k++){
+            for(int k=0; k< puzzleOnBoard->pointsCount(); k++){
                 if (puzzlePointsToRemove.count(l) == 0){
 
                     //fgIterations++;
                     //std::cout<< fgIterations  << std::endl;
 
-                    pointOfEnvelope = PointOfEnvelope(puzzleOnBoard.get(l).getX(), puzzleOnBoard.get(l).getY());
+                    pointOfEnvelope = PointOfEnvelope(puzzleOnBoard->get(l).getX(), puzzleOnBoard->get(l).getY());
                     pointOfEnvelope.setAdjacentTuPuzzle(true);
                     if (! insert(++lastBeforeRemoved, pointOfEnvelope)){
                            --lastBeforeRemoved;
@@ -359,7 +348,7 @@ void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
                        // std::cout << " inserted point of envelope " << lastBeforeRemoved << std::endl;
                     }
                 }
-                l=CIR(l-1, puzzleOnBoard.pointsCount());
+                l=CIR(l-1, puzzleOnBoard->pointsCount());
 
             }
             int tmpPointsCount = pointsCount();
@@ -373,12 +362,12 @@ void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
 
         }else{ //flipped
             int l=puzzlePointId;
-            for(int k=0; k< puzzleOnBoard.pointsCount(); k++){
+            for(int k=0; k< puzzleOnBoard->pointsCount(); k++){
                 if (puzzlePointsToRemove.count(l) == 0){
                     //fgIterations++;
                     //std::cout<< fgIterations  << std::endl;
 
-                    pointOfEnvelope = PointOfEnvelope(puzzleOnBoard.get(l).getX(), puzzleOnBoard.get(l).getY());
+                    pointOfEnvelope = PointOfEnvelope(puzzleOnBoard->get(l).getX(), puzzleOnBoard->get(l).getY());
                     pointOfEnvelope.setAdjacentTuPuzzle(true);
                     if (! insert(++lastBeforeRemoved,pointOfEnvelope)){
                         --lastBeforeRemoved;
@@ -387,7 +376,7 @@ void Layout::modifyEnvelope(const PuzzleOnBoard & puzzleOnBoard,
                         //std::cout << " inserted point of envelope " << lastBeforeRemoved << std::endl;
                     }
                 }
-                l=CIR(l+1, puzzleOnBoard.pointsCount());
+                l=CIR(l+1, puzzleOnBoard->pointsCount());
 
             }
             int tmpPointsCount = pointsCount();
@@ -414,8 +403,8 @@ float Layout::getSumEnvelope() const {
 
 bool Layout::operator==(const Layout &rhs) const {
     return //static_cast<const Polygon &>(*this) == static_cast<const Polygon &>(rhs) &&
-           sumArea == rhs.sumArea &&
-           sumEnvelope == rhs.sumEnvelope &&
+           sumArea/10 == rhs.sumArea/10 &&
+           sumEnvelope/10 == rhs.sumEnvelope/10 &&
            pointsCount()  == rhs.pointsCount() &&
            puzzleCount() == rhs.puzzleCount();
 }
@@ -429,10 +418,10 @@ bool Layout::operator!=(const Layout &rhs) const {
 bool Layout::checkInterlaceWithPuzzles(const std::string & msg){
     for(int i=0;i < pointsCount(); i++){
         for(int j=0; j < puzzlesOnBoard.size(); j++){
-            for(int k=0; k < puzzlesOnBoard[j].pointsCount(); k++){
+            for(int k=0; k < puzzlesOnBoard[j]->pointsCount(); k++){
                 //if(Segment(envelope[].))
                 if(Segment(envelope[i], envelope[Puzzle::getCircularSideId(i+1, envelope.size())])
-                .inters2(Segment(puzzlesOnBoard[j].get(k), puzzlesOnBoard[j].get(k+1)))) {
+                .inters2(Segment(puzzlesOnBoard[j]->get(k), puzzlesOnBoard[j]->get(k+1)))) {
 /*                    std::cout << "!!!!!!!!! collision !!!!!!!!!!! " << std::endl;
                     std::cout << "         envelope i, i+1 " << i << " " << i+1 << std::endl;
                     std::cout << "         envelope i, i+1  " << envelope[i] << " "
@@ -563,12 +552,12 @@ const bool Layout::isPromissing(float minAngle, float minSpan) const{
                     }
             }
         }
-        if(compareDim(envelopeSides[i++],minSpan) < 0){
-            if (getAngle(i)+getAngle(i+1) < minSumAngle){
-//                COUT(2);
-                return false;
-            }
-        }
+//        if(compareDim(envelopeSides[i++],minSpan) < 0){
+//            if (getAngle(i)+getAngle(i+1) < minSumAngle){
+////                COUT(2);
+//                return false;
+//            }
+//        }
 
     }
     return true;
@@ -617,7 +606,8 @@ void Layout::generateEnlarged(float offset){
         envelopeEnlarged.push_back(PointOfEnvelope(poi));
     }
     for (int j = 0; j < pointsCount(); j++) {
-        envelopeEnlarged[j].calcAngle(envelopeEnlarged[CIR(j-1, pointsCount())], envelopeEnlarged[j+1, pointsCount()]);
+        envelopeEnlarged[j].calcAngle(envelopeEnlarged[CIR(j-1, pointsCount())],
+                                           envelopeEnlarged[CIR(j+1, pointsCount())]);
     }
 
 

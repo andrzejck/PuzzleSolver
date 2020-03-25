@@ -15,6 +15,7 @@ float Math::ApproxAtan(float z)
 
 
 float Math::ApproxAtan2(float y, float x){
+    //std::cout << (int)y << " " << (int)x << std::endl;
     if (x != 0.0f)
     {
         if (fabsf(x) > fabsf(y))

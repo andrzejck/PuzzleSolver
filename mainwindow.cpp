@@ -43,19 +43,19 @@ void MainWindow::paintEvent(QPaintEvent *)
     int avgY=0;
 
     for(auto p: layout->getPuzzles()) {
-        points=p.asQPointF(0.6, 100, 100);
+        points=p->asQPointF(0.6, 100, 100);
         //painter.setPen(p.getColor());
-        painter.drawPolygon(points, p.pointsCount());
+        painter.drawPolygon(points, p->pointsCount());
         avgX=0;
         avgY=0;
-        for(int i=0; i < p.pointsCount(); i++){
+        for(int i=0; i < p->pointsCount(); i++){
             QStaticText qStaticText = QStaticText(QString(i));
             randomOffset = qrand() % 15;
             painter.drawText(points[i].x()+randomOffset, points[i].y()+randomOffset, QString::number(i));
             avgX = avgX + points[i].x();
             avgY = avgY + points[i].y();
         }
-        painter.drawText( avgX/p.pointsCount(), avgY/p.pointsCount(), QString::fromStdString(p.getId()));
+        painter.drawText( avgX/p->pointsCount(), avgY/p->pointsCount(), QString::fromStdString(p->getId()));
 
     }
 

@@ -3,7 +3,10 @@
 //
 
 #include "PuzzleOnBoard.h"
+#include "PuzzleOnBoardRepo.h"
 #include <cmath>
+
+//extern PuzzleOnBoardRepo puzzleOnBoardRepo;
 
 PuzzleOnBoard::PuzzleOnBoard(const Puzzle  * _puzzle,
                              const Point & _centerPoint ,
@@ -19,6 +22,7 @@ PuzzleOnBoard::PuzzleOnBoard(const Puzzle  * _puzzle,
     isFlipped = _isFlipped;
 
     setColor(Qt::black);
+
 
 }
 
@@ -110,12 +114,27 @@ PuzzleOnBoard &PuzzleOnBoard::rotate(float angle, int pointId) {
 PuzzleOnBoard &PuzzleOnBoard::reset() {
     if(puzzle == nullptr)
         throw std::logic_error("reset when puzzle is null");
-    points.clear();
-    isFlipped=false;
-    centerPoint=Point(0,0);
-    rotateAngle=0;
-    for(auto it = puzzle->begin(); it != puzzle->end(); it++){
-        points.push_back(*it);
+    isFlipped = false;
+    centerPoint = Point(0, 0);
+    rotateAngle = 0;
+
+    if(points.size() != puzzle->pointsCount()) {
+        //recreate
+        //std::cout << "AAA" << std::endl;
+        points.clear();
+        for (auto it = puzzle->begin(); it != puzzle->end(); it++) {
+            points.push_back(*it);
+        }
+    }else{
+        int i=0;
+        //std::cout << "BBB" << std::endl;
+        for (auto it = puzzle->begin(); it != puzzle->end(); it++) {
+            points[i].setX(it->getX());
+            points[i].setY(it->getY());
+            i++;
+        }
+
+        //update
     }
 
     return *this;
@@ -194,4 +213,20 @@ const int PuzzleOnBoard::inside(const Point & p) const{
     }
     return wn;
 
+}
+
+void PuzzleOnBoard::printPuzzle(){
+    std::cout << puzzleId << ";" << (int)((rotateAngle/(2.0*M_PI))*360.0) << ";" << centerPoint << ";" << pivotPointId << ";" << isFlipped << std::endl;
+}
+
+PuzzleOnBoard * PuzzleOnBoard::construct() {
+
+}
+
+bool PuzzleOnBoard::isInRepository() const {
+    return inRepository;
+}
+
+void PuzzleOnBoard::setInRepository(bool inRepository) {
+    PuzzleOnBoard::inRepository = inRepository;
 }

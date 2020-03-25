@@ -295,7 +295,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(250);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("0|1");
     t->addPoint(Point(0,0));
@@ -305,7 +305,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(250);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("13+11");
     t->addPoint(Point(0,0));
@@ -316,7 +316,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(350);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     //=============================
 
@@ -328,7 +328,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(95);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("18");
     t->addPoint(Point(0,0));
@@ -339,7 +339,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(140);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("17");
     t->addPoint(Point(0,0));
@@ -350,7 +350,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(145);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
 
@@ -363,7 +363,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(200);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
    t = new Puzzle("2|3");
    t->addPoint(Point(0,0));
@@ -373,7 +373,7 @@ void PuzzleList::generateSimplified() {
    t->setMinSpan(200);
    t->calculate();
    puzzleList.push_back(t);
-   puzzleIds[t->getId()]++;
+   puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
   t = new Puzzle("4");
   t->addPoint(Point(0,0));
@@ -385,7 +385,7 @@ void PuzzleList::generateSimplified() {
   t->setTwoSided(true);
   t->calculate();
   puzzleList.push_back(t);
-  puzzleIds[t->getId()]++;
+  puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
 
@@ -398,7 +398,7 @@ void PuzzleList::generateSimplified() {
   t->setTwoSided(true);
   t->calculate();
   puzzleList.push_back(t);
-  puzzleIds[t->getId()]++;
+  puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
   t = new Puzzle("6|7");
   t->addPoint(Point(0,0));
@@ -409,7 +409,7 @@ void PuzzleList::generateSimplified() {
   t->setTwoSided(true);
   t->calculate();
   puzzleList.push_back(t);
-  puzzleIds[t->getId()]++;
+  puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
   t = new Puzzle("9");
@@ -422,7 +422,7 @@ void PuzzleList::generateSimplified() {
   t->setTwoSided(true);
   t->calculate();
   puzzleList.push_back(t);
-  puzzleIds[t->getId()]++;
+  puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
 
@@ -436,7 +436,7 @@ void PuzzleList::generateSimplified() {
     t->setTwoSided(true);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("10");
     t->addPoint(Point(0,0));
@@ -447,7 +447,7 @@ void PuzzleList::generateSimplified() {
     t->setTwoSided(true);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
     t = new Puzzle("5");
     t->addPoint(Point(0,0));
@@ -457,7 +457,7 @@ void PuzzleList::generateSimplified() {
     t->setMinSpan(290);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
     t = new Puzzle("12");
@@ -471,7 +471,7 @@ void PuzzleList::generateSimplified() {
     t->setTwoSided(true);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
 
@@ -487,7 +487,7 @@ void PuzzleList::generateSimplified() {
     t->setTwoSided(true);
     t->calculate();
     puzzleList.push_back(t);
-    puzzleIds[t->getId()]++;
+    puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;
 
 
     /*t = new Puzzle("12+16");
@@ -501,7 +501,7 @@ void PuzzleList::generateSimplified() {
      t->calculate();
 
      puzzleList.push_back(t);
-     puzzleIds[t->getId()]++;*/
+     puzzleIds[t->getId()]++; puzzleIdsMap[t->getId()]=t;*/
 
     calculateMins();
  //std::cout << "************** genrated ************" << this->size() << std::endl;

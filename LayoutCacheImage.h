@@ -101,7 +101,15 @@ public:
     // as hash function.
     size_t operator()(const LayoutCacheImage& l) const
     {
-        return (int)(l.getSumArea())+(int)(l.getSumEnvelope()/10)+l.pointsCount()+l.puzzleCount();
+        //return (int)(l.getSumArea())+(int)(l.getSumEnvelope()/10)+l.pointsCount()+l.puzzleCount();
+        size_t seed;
+
+        boost::hash_combine(seed, (int)(l.getSumArea()));
+        boost::hash_combine(seed, l.getSumEnvelope()/5);
+        boost::hash_combine(seed, l.pointsCount());
+        boost::hash_combine(seed, l.puzzleCount());
+        return seed;
+
     }
 };
 

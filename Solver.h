@@ -27,6 +27,7 @@
 #define SAVE_PRE false
 
 #define SAVELOG 20000000
+#define MAX_BUCKETS 100
 
 struct SolverConfig{
     int QUEUE_SIZE;
@@ -47,6 +48,27 @@ class Solver {
     };
 private:
     SolverConfig solverConfig;
+
+    void process_mem_usage(double& vm_usage, double& resident_set){
+        vm_usage     = 0.0;
+        resident_set = 0.0;
+
+        // the two fields we want
+        unsigned long vsize;
+        long rss;
+        {
+            std::string ignore;
+            std::ifstream ifs("/proc/self/stat", std::ios_base::in);
+            ifs >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore
+                >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore
+                >> ignore >> ignore >> vsize >> rss;
+        }
+
+        long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
+        vm_usage = vsize / 1024.0;
+        resident_set = rss * page_size_kb;
+    }
+
 public:
     void setSolverConfig(const SolverConfig &solverConfig);
 
@@ -58,10 +80,15 @@ private:
         //std::random_shuffle(std::begin(res), std::end(res));
         return res;
     }
+    int cache_hits = 0;
+    int cache_misses = 0;
+    long stackSize = 0;
     //auto rng = std::default_random_engine {};
     long fgIterations=0;
+    long fcIterations=0;
     float maxArea =0;
-    std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStack;
+    std::unordered_map<int, std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass>> layoutStackBuckets;
+    //std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStack;
     std::unordered_map<LayoutCacheImage, int, LayoutCacheImageHashFunction> layoutSet;
     void paintLayout(Layout & layout, QString filename, MainWindow * w){
         w->setLayout(&layout);
@@ -89,9 +116,13 @@ private:
     }
 
 }
+
 public:
     void solvePuzzles( MainWindow * w, QString layoutFilename, int iStart=-1, int iSize = -1 );
     bool layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w);
+    void printBuckets();
+
+    //~Solver();
 };
 
 

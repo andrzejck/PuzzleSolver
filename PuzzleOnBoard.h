@@ -16,6 +16,11 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
+
+
+
+
 
 class PuzzleOnBoard : public Polygon {
 private:
@@ -27,7 +32,11 @@ private:
     float rotateAngle;
     bool isFlipped;
     std::string puzzleId;
+    bool inRepository = false;
+public:
 
+
+private:
     std::vector<Point> points;
     std::vector<Segment> segments;
 
@@ -145,11 +154,49 @@ public:
 
     bool isIsFlipped() const;
 
+    void printPuzzle();
+
+    PuzzleOnBoard * construct();
 
 
+    static std::size_t hash_value(std::string puzzleId_,
+                                  int x,
+                                  int y,
+                                  int pivotPointId_,
+                                  bool isFlipped_) {
+        std::size_t seed = 0;
+        boost::hash_combine(seed, puzzleId_);
+        boost::hash_combine(seed, x);
+        boost::hash_combine(seed, y);
+        boost::hash_combine(seed, pivotPointId_);
+        boost::hash_combine(seed, isFlipped_);
+        return seed;
+    }
 
+    std::size_t hash_value()
+    {
+        return hash_value(puzzleId,
+                          centerPoint.getX(),
+                          centerPoint.getY(),
+                          pivotPointId,
+                          isFlipped);
+
+    }
+
+    bool isInRepository() const;
+    void setInRepository(bool inRepository=true);
 
 };
 
+
+
+/*class PuzzleOnBoardHashFunction {
+public:
+
+    size_t operator()(const PuzzleOnBoard& l) const
+    {
+        return std::hash<std::string>{}(l.getId());
+    }
+};*/
 
 #endif //PUZZLE_PUZZLEONBOARD_H

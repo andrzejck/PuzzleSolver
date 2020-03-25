@@ -25,9 +25,9 @@ public:
     Point() { x=0; y=0;};
     Point(float _x, float _y) {x=_x; y=_y;}
     Point(const Point &p2) {x = p2.x; y = p2.y; }
-    short getX() const;
+    inline short getX() const {return x;};
 
-    short getY() const;
+    inline short getY() const {return y;};
 
     bool operator==(const Point &rhs) const;
 

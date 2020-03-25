@@ -42,7 +42,7 @@ add_executable(Puzzle
         Vector.cpp
         Vector.h
         CIniFile.h
-        CIniFile.cpp Solver.cpp Solver.h Math.cpp Math.h)
+        CIniFile.cpp Solver.cpp Solver.h Math.cpp Math.h PuzzleOnBoardRepo.cpp PuzzleOnBoardRepo.h)
 
 #qt5_generate_moc(main.cpp main.moc)
 #qt5_generate_moc(mainwindow.cpp mainwindow.moc)
