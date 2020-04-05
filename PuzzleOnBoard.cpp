@@ -230,3 +230,7 @@ bool PuzzleOnBoard::isInRepository() const {
 void PuzzleOnBoard::setInRepository(bool inRepository) {
     PuzzleOnBoard::inRepository = inRepository;
 }
+
+void PuzzleOnBoard::setPuzzle(const Puzzle *puzzle) {
+    PuzzleOnBoard::puzzle = puzzle;
+}

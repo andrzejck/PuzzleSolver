@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::paintEvent(QPaintEvent *)
 {
-
+    //return;
     QPainter painter(this);
     /*QBrush brush;
     brush.setColor(Qt::gray);
@@ -83,7 +83,10 @@ void MainWindow::paintEvent(QPaintEvent *)
     painter.setFont(QFont("Arial", 15));
     painter.drawText(rect(), Qt::AlignCenter, QString::number(layout->getPuzzles().size())
                                              +QString(" ")
-                                             +QString::number(layout->getSumArea()));
+                                             +QString::number(layout->getSumArea())
+                                             +QString(" ")
+                                             +QString::number(layout->getQualityFactor(), 'g', 2)
+                                             );
 
     for(auto p: puzzlesOnBoard){
         points=p.asQPointF(0.6, 800, 100);

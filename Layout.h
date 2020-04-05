@@ -7,6 +7,7 @@
 #include <vector>
 #include <ostream>
 #include "PuzzleOnBoard.h"
+#include "PuzzleOnBoardRepo.h"
 #include "PointOfEnvelope.h"
 #include "point.h"
 #include "PuzzleList.h"
@@ -15,9 +16,12 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/serialization/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+//#include <boost/serialization/unordered_map.hpp>
+#include <boost/serialization/split_member.hpp>
 
+
+extern PuzzleOnBoardRepo puzzleOnBoardRepo;
+extern PuzzleList puzzleListRepo;
 
 
 
@@ -56,8 +60,47 @@ public:
     const bool isPromissing(float minAngle, float minSpan) const;
 
 private:
+
     friend class boost::serialization::access;
     template<class Archive>
+    void save(Archive & ar, const unsigned int version) const
+    {
+
+        ar & boost::serialization::base_object<Polygon>(*this);
+        //ar & puzzlesOnBoard;
+        ar & envelope;
+        ar & envelopeEnlarged;
+
+        ar & sumArea;
+        ar & sumEnvelope;
+        ar & fgOrigin;
+        ar & minSide;
+        ar & puzzlesCountTrace;
+        std::vector<std::string> hashes = getPuzzleHashes();
+        ar & hashes;
+    }
+    template<class Archive>
+    void load(Archive & ar, const unsigned int version)
+    {
+        std::vector<std::string> hashes;
+        ar & boost::serialization::base_object<Polygon>(*this);
+        //ar & puzzlesOnBoard;
+        ar & envelope;
+        ar & envelopeEnlarged;
+
+        ar & sumArea;
+        ar & sumEnvelope;
+        ar & fgOrigin;
+        ar & minSide;
+        ar & puzzlesCountTrace;
+        ar & hashes;
+
+        for(auto h: hashes){
+            puzzlesOnBoard.push_back(puzzleOnBoardRepo.get(h));
+        }
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
+    /*template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
         ar & boost::serialization::base_object<Polygon>(*this);
@@ -69,8 +112,8 @@ private:
         ar & fgOrigin;
         ar & minSide;
         ar & envelopeEnlarged;
-
-    }
+        ar & puzzlesCountTrace;
+    }*/
 
 public:
     float getSumEnvelope() const;
@@ -219,6 +262,23 @@ public:
         }*/
     }
     void generateEnlarged(float offset);
+
+    void clear(){
+        puzzlesOnBoard.clear();
+        puzzlesOnBoard.shrink_to_fit();
+        envelope.clear();
+        envelope.shrink_to_fit();
+        envelopeEnlarged.clear();
+        envelopeEnlarged.shrink_to_fit();
+    }
+
+    const std::vector<std::string> getPuzzleHashes() const{
+        std::vector<std::string> ret;
+        for(auto p: puzzlesOnBoard){
+            ret.push_back(p->hash_value());
+        }
+        return ret;
+    }
 };
 
 class LayoutHashFunction {

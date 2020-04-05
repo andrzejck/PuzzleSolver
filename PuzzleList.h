@@ -9,6 +9,7 @@
 #include "puzzle.h"
 #include <algorithm>
 #include <unordered_map>
+#include <stdexcept>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -31,7 +32,10 @@ private:
     std::unordered_map<std::string, int> puzzleIds;
     std::unordered_map<std::string, Puzzle*> puzzleIdsMap;
     float minAngle;
+    bool filled=false;
 public:
+    bool isFilled() const;
+
     float getMinAngle() const;
 
     float getMinSpan() const;
@@ -42,7 +46,7 @@ private:
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        ar & puzzleList;
+        //ar & puzzleList;
         ar & puzzleIds;
         ar & minSpan;
         ar & minAngle;
@@ -64,6 +68,19 @@ public:
 //    void generateSimplified1();
 //    void generateSimplified2();
 //    void generate();
+    void copyFrom(PuzzleList & pl){
+        if(! puzzleList.empty()){
+            throw std::logic_error("PuzzleList.copyFrom into not empty list");
+        }
+        puzzleIdsMap.clear();
+        for(auto pid : puzzleIds){
+            for(int i=0; i < pid.second; i++){
+                puzzleList.push_back(pl.getById(pid.first));
+                puzzleIdsMap[pid.first] = pl.getById(pid.first);
+            }
+        }
+        filled = true;
+    }
 
     std::vector<Puzzle*>::const_iterator cbegin(){
         return puzzleList.cbegin();
@@ -88,13 +105,7 @@ public:
             puzzleIdsMap.erase(puzzleList[pos]->getId());
 
         }
-        if(puzzleList[pos]->getMinAngle() != minAngle)
-        {
-            puzzleList.erase(puzzleList.begin() + pos);
-        }else{
-            puzzleList.erase(puzzleList.begin() + pos);
-            calculateMins();
-        };
+        puzzleList.erase(puzzleList.begin() + pos);
 
 
     }
@@ -137,7 +148,13 @@ public:
             return nullptr;
 
     }
+    void clear(){
+        puzzleList.clear();
+        puzzleList.shrink_to_fit();
+        puzzleIds.clear();
+        puzzleIdsMap.clear();
 
+    }
 };
 
 

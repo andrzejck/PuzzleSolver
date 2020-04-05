@@ -20,10 +20,17 @@
 PuzzleOnBoardRepo puzzleOnBoardRepo;
 
 
+
 bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
     PuzzleOnBoard  * puzzleOnBoard = nullptr;
     const Puzzle * puzzle;
     std::string line;
+
+    if(! puzzles.isFilled()){
+        puzzles.copyFrom(puzzleListRepo);
+    }
+    puzzles.sort();
+
     Layout layoutTmp = layout;
     PuzzleList puzzleListTmp = puzzles;
 
@@ -38,7 +45,7 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
     float envelopeAngleToSegment0 =0;
     float sideAngleToSegment0 = 0;
 //    std::string line;
-    puzzles.sort();
+
 
     auto t_start = std::time(0);
     auto t_end = std::time(0);
@@ -88,7 +95,9 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
                                                                 xPoint,
                                                                 yPoint,
                                                                 pointId,
-                                                                flipped);
+                                                                flipped,
+                                                                angle,
+                                                                puzzle);
                         bool wasInRepo;
                         if(puzzleOnBoard == nullptr){
 
@@ -108,6 +117,7 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
                             wasInRepo = true;
                             puzzleOnBoard->setInRepository();
                         }
+                        //if(puzzleOnBoard)
                         //puzzleOnBoard->printPuzzle();
                         fcIterations++;
                         if (layout.doesPuzzleFit(puzzleOnBoard, i, i + 1, j, nextJ, flipped)) {
@@ -134,7 +144,7 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
                             }
 
 
-                            if (DEBUG) {
+                            if (DEBUG && puzzle->getId() == "14+8") {
                                 if(w != nullptr) w->setLayout(&layout);
                                 if(w != nullptr) w->pPaintPuzzle();
                                 std::getline(std::cin, line);
@@ -178,7 +188,7 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
 
                             }
                             puzzles.erase(k);
-                            if (DEBUG) {
+                            if (DEBUG  && puzzle->getId() == "14+8") {
                                 if(w != nullptr) w->setLayout(&layout);
                                 if(w != nullptr) w->pPaintPuzzle();
                                 std::getline(std::cin, line);
@@ -191,12 +201,16 @@ bool Solver::layNewPuzzle2(Layout &layout, PuzzleList &puzzles, MainWindow *w) {
 
                                         boost::archive::text_oarchive oal(ofsl);
                                         // write class instance to archive
+                                        oal << puzzleListRepo;
+                                        oal << puzzleOnBoardRepo;
                                         oal << puzzles;
                                         oal << layout;
-
+                                        oal << layoutStack;
                                         oal << stackSize;
                                         oal << layoutSet;
                                         oal << fgIterations;
+                                        oal << maxArea;
+                                        oal << stackSize;
                                         ofsl.close();
                                     }
                                     if(stackSize > solverConfig.QUEUE_SIZE)
@@ -290,32 +304,39 @@ void Solver::solvePuzzles( MainWindow * w, QString layoutFilename, int iStart, i
 
 
     if(! (layoutFilename.trimmed().isEmpty())) {
-//        std::ifstream ifsl(layoutFilename.toStdString());
-//        boost::archive::text_iarchive ial(ifsl);
+        std::ifstream ifsl(layoutFilename.toStdString());
+        boost::archive::text_iarchive ial(ifsl);
 //        // read class state from archive
-//        ial >> puzzles;
-//        ial >> layout;
-//        //ial >> layoutStack;
-//        ial >> layoutSet;
-//        ial >> fgIterations;
-//        maxArea = layout.getSumArea();
-//        ifsl.close();
-//        if(iStart != -1){
-//            int i=0;
-//            while(i++<iStart && !layoutStack.empty()){
-//                layoutStack.pop();
-//            }
-//        }
-//        if(iSize != -1) {
-//            int i=0;
-//            std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStackTmp;
-//            while (i++<iSize && !layoutStack.empty() ){
-//                layoutStackTmp.push(layoutStack.top());
-//                layoutStack.pop();
-//            }
-//            layoutStack=layoutStackTmp;
-//        }
-//        COUT(layoutStack.size())
+        ial >> puzzleListRepo;
+        ial >> puzzleOnBoardRepo;
+        ial >> puzzles;
+        ial >> layout;
+        ial >> layoutStack;
+        ial >> stackSize;
+        ial >> layoutSet;
+        ial >> fgIterations;
+        ial >> maxArea;
+        ial >> stackSize;
+        //maxArea = layout.getSumArea();
+        puzzles.copyFrom(puzzleListRepo);
+        ifsl.close();
+        if(iStart != -1){
+            int i=0;
+            while(i++<iStart && !layoutStack.empty()){
+                layoutStack.pop();
+            }
+        }
+        if(iSize != -1) {
+            int i=0;
+            std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStackTmp;
+            while (i++<iSize && !layoutStack.empty() ){
+                layoutStackTmp.push(layoutStack.top());
+                layoutStack.pop();
+            }
+            layoutStack=layoutStackTmp;
+        }
+        solverConfig.QUEUE_SIZE += stackSize;
+        COUT(layoutStack.size())
     }else {
 
         PointOfEnvelope pointOfEnvelope;
@@ -366,51 +387,10 @@ void Solver::solvePuzzles( MainWindow * w, QString layoutFilename, int iStart, i
         std::pair<Layout, PuzzleList> fromStack=top_stack();
         layoutFromStack=fromStack.first;
         puzzleListFromStack=fromStack.second;
-//        if (puzzleListFromStack.size() > 0) {
-//            if ((prevLayout.pointsCount() == 0 ) || (prevLayout != layoutFromStack))
-            layNewPuzzle2(layoutFromStack, puzzleListFromStack, w);
-//            prevLayout=layoutFromStack;
-
-
-
-//            if ((puzzleListFromStack.size() <= 0)){
-//                if(w != nullptr) w->setLayout(&layoutFromStack);
-//                unusedPuzzleList.clear();
-//                int n=0;
-//                for(int i=0; i < puzzleListFromStack.size(); i++){
-//                    unusedPuzzleList.push_back(PuzzleOnBoard(puzzleListFromStack.get(i), Point(0,0), 0, false, 0)
-//                                                       .translate(Point(0,300*n++)));
-//                }
-//                if(w != nullptr) w->setPuzzlesOnBoard(unusedPuzzleList);
-//
-//                if(w != nullptr) w->pPaintPuzzle();
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//                QString filename = QString::number(puzzleListFromStack.size())+QString("_")+
-//                                   QString::number(fgIterations)+QString(".png");
-//                if(w != nullptr) w->grab().save(filename);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            }
-//
-//        }else{
-//            if(w != nullptr) w->setLayout(&layoutFromStack);
-//            unusedPuzzleList.clear();
-//            int n=0;
-//            for(int i=0; i < puzzleListFromStack.size(); i++){
-//                unusedPuzzleList.push_back(PuzzleOnBoard(puzzleListFromStack.get(i), Point(0,0), 0, false, 0)
-//                                                   .translate(Point(0,300*n++)));
-//            }
-//            if(w != nullptr) w->setPuzzlesOnBoard(unusedPuzzleList);
-//
-//            if(w != nullptr) w->pPaintPuzzle();
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            QString filename = QString::number(puzzleListFromStack.size())+QString("_")+
-//                               QString::number(fgIterations)+QString(".png");
-//            if(w != nullptr) w->grab().save(filename);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//
-//
-        //}
-
+        //puzzleListFromStack.copyFrom()
+        layNewPuzzle2(layoutFromStack, puzzleListFromStack, w);
+        layoutFromStack.clear();
+        puzzleListFromStack.clear();
     }
     COUT("EEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNNNDDDDDDDDDDDDDDDDDDDDDDD");
     if(w != nullptr) w->setLayout(&layoutFromStack);
@@ -439,38 +419,44 @@ void Solver::setSolverConfig(const SolverConfig &solverConfig) {
 }
 
 void  Solver::push_back_to_stack(std::pair<Layout, PuzzleList> p) {
-    //if(layoutSet.count(LayoutCacheImage(p.first, p.second)) == 0){
-    //    layoutSet.insert({LayoutCacheImage(p.first,  p.second),1});
-        layoutStackBuckets[p.first.getBucket()].push(p);
-        //layoutStack.push(p);
+    LayoutCacheImage lci = LayoutCacheImage(p.first, p.second);
+    if(layoutSet.count(lci) == 0){
+        layoutSet.insert({lci,1});
+        //layoutStackBuckets[p.first.getBucket()].push(p);
+        layoutStack.push(p);
         stackSize++;
-//        cache_misses++;
-//    } else{
-//        cache_hits++;
-//    }
+        cache_misses++;
+    } else{
+        cache_hits++;
+    }
 
 }
 
 std::pair<Layout, PuzzleList>  Solver::top_stack()
 {
-    for(int i=1; i < MAX_BUCKETS; i ++){
-        if(layoutStackBuckets.count(i)>0){
-            if(! layoutStackBuckets[i].empty()){
-                std::pair<Layout, PuzzleList> ret = layoutStackBuckets[i].top();
-                layoutStackBuckets[i].pop();
-                stackSize--;
-                return ret;
-            }
-        }
-    }
+//    for(int i=1; i < MAX_BUCKETS; i ++){
+//        if(layoutStackBuckets.count(i)>0){
+//            if(! layoutStackBuckets[i].empty()){
+//                std::pair<Layout, PuzzleList> ret = layoutStackBuckets[i].top();
+//                layoutStackBuckets[i].pop();
+//                stackSize--;
+//                return ret;
+//            }
+//        }
+//    }
+    stackSize--;
+    std::pair<Layout, PuzzleList> ret = layoutStack.top();
+    layoutStack.pop();
+    return ret;
+
 };
 
 void Solver::printBuckets(){
-    COUT("  buckets: ");
-    for(int i=1; i < MAX_BUCKETS; i ++) {
-        if(layoutStackBuckets.count(i)>0) {
-            COUT("        " << i<< " " <<  layoutStackBuckets[i].size());
-        }
-    }
+//    COUT("  buckets: ");
+//    for(int i=1; i < MAX_BUCKETS; i ++) {
+//        if(layoutStackBuckets.count(i)>0) {
+//            COUT("        " << i<< " " <<  layoutStackBuckets[i].size());
+//        }
+//    }
 };
 

@@ -517,7 +517,17 @@ const int Layout::inside(const Point &p) const{
 }
 
 float Layout::getQualityFactor() const {
-    return qualityFactor;
+
+    float pc = (float) (puzzleCount())/17.0;
+    float gamma = 1;
+    float alfa = 0.99 * gamma * (1-pc);
+    //alfa = 1;
+    float beta = 0.01 * gamma * (pc);
+
+    float qf = - (float) (pointsCount())/20.0* alfa +
+                        sumArea/104 * beta;
+    return qf;
+
 }
 
 const bool Layout::isPromissing(float minAngle, float minSpan) const{

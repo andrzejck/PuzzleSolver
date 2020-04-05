@@ -28,6 +28,7 @@
 
 
 CIniFile * CIniFile::instance = nullptr;
+PuzzleList puzzleListRepo;
 //std::string s= std::string("QUEUE_SIZE");
 //int QUEUE_SIZE = 1000000;
 int QUEUE_SIZE = 100000;
@@ -127,6 +128,7 @@ void solvePuzzles( MainWindow * w, QString layoutFilename, int iStart=-1, int iS
 int main(int argc, char *argv[])
 {
 
+    puzzleListRepo.generateSimplified();
     logging::add_file_log("layout.log");
     CIniFile * cIniFile = cIniFile->getInstance();
     QString layoutFilename;

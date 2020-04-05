@@ -11,6 +11,9 @@
 #include <QPointF>
 #include <ostream>
 #include "Polygon.h"
+#include "PuzzleList.h"
+#include <sstream>
+//#include "PuzzleOnBoardRepo.h"
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -27,12 +30,17 @@ private:
 
 
     const Puzzle * puzzle = nullptr;
+public:
+    void setPuzzle(const Puzzle *puzzle);
+
+private:
     Point centerPoint;
     int pivotPointId;
     float rotateAngle;
     bool isFlipped;
     std::string puzzleId;
     bool inRepository = false;
+    std::string hash;
 public:
 
 
@@ -52,6 +60,7 @@ private:
         ar & isFlipped;
         ar & points;
         ar & segments;
+        ar & hash;
 
     }
 
@@ -159,32 +168,42 @@ public:
     PuzzleOnBoard * construct();
 
 
-    static std::size_t hash_value(std::string puzzleId_,
+    static std::string hash_value(std::string puzzleId_,
                                   int x,
                                   int y,
                                   int pivotPointId_,
-                                  bool isFlipped_) {
-        std::size_t seed = 0;
-        boost::hash_combine(seed, puzzleId_);
-        boost::hash_combine(seed, x);
-        boost::hash_combine(seed, y);
-        boost::hash_combine(seed, pivotPointId_);
-        boost::hash_combine(seed, isFlipped_);
-        return seed;
+                                  bool isFlipped_,
+                                  float rotateAngle_) {
+        std::ostringstream ret;
+        ret << puzzleId_;
+        ret << x;
+        ret << y;
+        ret << pivotPointId_;
+        ret << isFlipped_;
+        ret << (int)(rotateAngle_*60);
+//        ret.append(y);
+//        ret.append(pivotPointId_);
+//        ret.append(isFlipped_);
+//        ret.append((int)(rotateAngle_*60));
+        return ret.str();
     }
 
-    std::size_t hash_value()
+    std::string hash_value()
     {
-        return hash_value(puzzleId,
+        hash = hash_value(puzzleId,
                           centerPoint.getX(),
                           centerPoint.getY(),
                           pivotPointId,
-                          isFlipped);
+                          isFlipped,
+                          rotateAngle);
+        return hash;
 
     }
 
     bool isInRepository() const;
     void setInRepository(bool inRepository=true);
+
+
 
 };
 

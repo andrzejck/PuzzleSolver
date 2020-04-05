@@ -16,18 +16,22 @@
 #include <set>
 #include <random>
 #include <thread>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/unordered_map.hpp>
 
 
 #define COUT(x) std::cout << x << std::endl;
 
 #define DEBUG_FIT (fgIterations < 0)
-#define DEBUG (fgIterations < 0)
+//#define DEBUG (fgIterations < 0)
 #define DEBUG_PROMISSING (fgIterations <= 0)
 #define DEBUG_INTERLACE (fgIterations <=  0)
 #define SAVE_PRE false
 
 #define SAVELOG 20000000
 #define MAX_BUCKETS 100
+extern PuzzleList puzzleListRepo;
 
 struct SolverConfig{
     int QUEUE_SIZE;
@@ -87,8 +91,8 @@ private:
     long fgIterations=0;
     long fcIterations=0;
     float maxArea =0;
-    std::unordered_map<int, std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass>> layoutStackBuckets;
-    //std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStack;
+    //std::unordered_map<int, std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass>> layoutStackBuckets;
+    std::priority_queue<std::pair<Layout, PuzzleList>, std::vector<std::pair<Layout, PuzzleList>>, CompareLayoutsClass> layoutStack;
     std::unordered_map<LayoutCacheImage, int, LayoutCacheImageHashFunction> layoutSet;
     void paintLayout(Layout & layout, QString filename, MainWindow * w){
         w->setLayout(&layout);
@@ -108,7 +112,16 @@ private:
 //    }
 //    return l1.first.pointsCount() < l2.first.pointsCount();
 
-    if(l1.first.pointsCount() == l2.first.pointsCount()) {
+    //return l1.first.getQualityFactor() > l2.first.getQualityFactor();
+    
+    if(l1.first.puzzleCount() >= 16)
+        return true;
+
+    if(l2.first.puzzleCount() >= 16)
+         return false;
+
+
+        if(l1.first.pointsCount() == l2.first.pointsCount()) {
         return l1.first.getSumArea() > l2.first.getSumArea();
         //return l1.first.getQualityFactor() > l2.first.getQualityFactor();
     }else {

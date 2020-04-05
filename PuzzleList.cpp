@@ -274,8 +274,8 @@ bool comparePuzzle(Puzzle * l1, const Puzzle * l2){
 //}
 
 void PuzzleList::generateSimplified() {
-
-   Puzzle * t;
+    filled=true;
+    Puzzle * t;
 
   //t = Puzzle("0");
   /*t = Puzzle("0");
@@ -977,4 +977,8 @@ float PuzzleList::getMinAngle() const {
 
 float PuzzleList::getMinSpan() const {
     return minSpan;
+}
+
+bool PuzzleList::isFilled() const {
+    return filled;
 }
